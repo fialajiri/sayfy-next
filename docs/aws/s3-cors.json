@@ -1,0 +1,9 @@
+[
+  {
+    "AllowedHeaders": ["content-type", "content-length"],
+    "AllowedMethods": ["PUT", "GET"],
+    "AllowedOrigins": ["https://sayfy-next.vercel.app", "https://www.sayfy.cz"],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3000
+  }
+]
