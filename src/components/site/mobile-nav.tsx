@@ -9,9 +9,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { NavLinks } from "./nav-links";
+import type { SocialLinks as SocialLinksData } from "./navigation";
 import { SocialLinks } from "./social-links";
 
-export function MobileNav() {
+export function MobileNav({ socialLinks }: { socialLinks: SocialLinksData }) {
   const [open, setOpen] = useState(false);
 
   function handleNavigate() {
@@ -34,7 +35,7 @@ export function MobileNav() {
         <nav aria-label="Hlavní navigace" className="mt-6">
           <NavLinks orientation="vertical" onNavigate={handleNavigate} />
         </nav>
-        <SocialLinks className="mt-auto" />
+        <SocialLinks links={socialLinks} className="mt-auto" />
       </SheetContent>
     </Sheet>
   );

@@ -27,7 +27,7 @@ argument to `model()`) once you've confirmed it in Atlas. Full field list in `05
 | `StaticPage` | `staticpages` | one document in use: propozice `635c21aea369bc4f74025d04` |
 | `Log` | `logs` | **not modelled**; leave the collection in place, stop writing to it |
 | *new* `Result` | `results` | race results by year (seeded from `vysledky.json`) |
-| *new* `Settings` | `settings` | singleton: race date, ročník, registration URL + open flag |
+| *new* `Settings` | `settings` | singleton: registration URL + open flag, optional ročník override. Race date is **fixed: every year 28. 9. at 11:00 Prague** (computed, never stored) |
 | *new* `Partner` | `partners` | sponsor logos (seeded from `public/logos/support`) |
 | *new* `PageContent` | `pagecontents` | one doc per page (`site`, `home`, `sayfy`, `kontakt`, `podpora`), defaults = legacy copy (`08` Part B) |
 
@@ -89,7 +89,7 @@ Legend: **SA** = server action · **RH** = route handler · **RSC** = read in a 
 | Feature | New | Notes |
 |---|---|---|
 | Výsledky | **RSC** `listResults()`, `getResultByYear(rok)`; **SA** `upsertResult`, `deleteResult` `[admin]` | Zod: year 4 digits, unique; edition ≥1; `url` must be `https://` (warn if not on `sportt.cz` because of CSP `frame-src`) |
-| Settings | **RSC** `getSettings()`; **SA** `updateSettings` `[admin]` | `raceDate`, `edition`, `registrationUrl`, `registrationOpen`. Revalidates `/`, `/propozice` |
+| Settings | **RSC** `getSettings()`; **SA** `updateSettings` `[admin]` | `registrationUrl`, `registrationOpen`, `editionOverride` (ročník defaults to latest result +1). Revalidates `/`, `/propozice` |
 | Partners | **RSC** `listPartners()`; **SA** `createPartner`, `updatePartner`, `deletePartner`, `reorderPartners` `[admin]` | name (required, used as `alt`), logo (upload, `partners/` prefix), optional `url`, `order` |
 | Page content | **RSC** `getPageContent(key)` (merged over defaults, never throws: fails safe to defaults); **SA** `updatePageContent(key, input)` `[admin]` | Per-page Zod schema, rich fields sanitized, replaced S3 images deleted, `revalidatePath` per page (`site` → whole layout). See `08` Part B |
 

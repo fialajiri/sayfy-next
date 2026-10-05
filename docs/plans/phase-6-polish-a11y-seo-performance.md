@@ -40,7 +40,10 @@ sitemap tests).
 - [ ] SVG logo (light/dark variants), favicon set + `apple-icon`, `manifest.ts`.
 
 ## 2. States
-- [ ] `loading.tsx` skeletons that match the final layouts (no spinner overlays anywhere).
+- [ ] Skeletons that match the final layouts (no spinner overlays anywhere). ⚠️ **Never put a `loading.tsx`
+      above a route that can `notFound()`** (`aktuality/[slug]`, `fotogalerie/[slug]`, `vysledky/[rok]`): the
+      Suspense boundary starts streaming with HTTP 200, so missing pages return 200 instead of 404 (found in
+      Phase 1). Use an in-page `<Suspense>` around slow parts instead.
 - [ ] Empty states: no news ("Zatím žádné aktuality"), an empty gallery, no results, no partners.
 - [ ] `error.tsx` per segment with retry; `not-found.tsx` designed; image `onError` placeholder.
 

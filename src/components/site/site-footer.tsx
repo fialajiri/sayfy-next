@@ -1,20 +1,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import codeFactory from "@/../public/brand/codefactory.svg";
-import { NAV_ITEMS } from "./navigation";
+import { NAV_ITEMS, type SocialLinks as SocialLinksData } from "./navigation";
 import { SocialLinks } from "./social-links";
 import { ThemeToggle } from "./theme-toggle";
 
-export function SiteFooter() {
+type SiteFooterProps = { socialLinks: SocialLinksData; tagline: string };
+
+function TaglineHeading({ tagline }: { tagline: string }) {
+  const words = tagline.split(" ");
+  const accent = words.length > 2 ? words.slice(-2).join(" ") : "";
+  const lead = accent ? words.slice(0, -2).join(" ") : tagline;
+  return (
+    <p className="font-display-upper text-display-2 italic">
+      {lead} {accent && <span className="text-signal">{accent}</span>}
+    </p>
+  );
+}
+
+export function SiteFooter({ socialLinks, tagline }: SiteFooterProps) {
   return (
     <footer className="dark bg-asphalt-950 text-foreground mt-auto">
       <div className="checker-band" aria-hidden="true" />
       <div className="max-w-wide mx-auto grid gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1fr_auto] lg:px-8">
         <div className="space-y-4">
-          <p className="font-display-upper text-display-2 italic">
-            Uvidíme se <span className="text-signal">na startu</span>
-          </p>
-          <SocialLinks className="-ml-3" />
+          <TaglineHeading tagline={tagline} />
+          <SocialLinks links={socialLinks} className="-ml-3" />
         </div>
         <nav aria-label="Patička">
           <ul className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm">

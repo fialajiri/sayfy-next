@@ -220,7 +220,7 @@ colour and no countdown on this page. It closes with a quiet link: "Přijeďte u
 
 ### Propozice `/propozice`
 Two columns on desktop: rich text (with an auto-generated **"Na této stránce"** TOC from h2/h3) and a
-**sticky quick-facts card**: date + start time, place, ročník, registration CTA, link to last year's
+**sticky quick-facts card**: date + start time (always 28. 9., 11:00), place, ročník, registration CTA, link to last year's
 results. On mobile the card comes first, collapsed. Tables in the content get horizontal scroll
 wrappers and zebra rows.
 

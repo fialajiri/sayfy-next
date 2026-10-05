@@ -28,7 +28,7 @@ accounts, no emails), so several zive layers simply aren't needed.
 | Public site | Domů, Sayfy, Aktuality, Propozice, Výsledky, Fotogalerie, Kontakt, Podpora | Same pages, same Czech URLs, **full redesign** (`06-design-system.md`) |
 | Admin | Inline "Edit/Smazat" buttons on public pages, client-only guard | Dedicated `/admin` area, server-guarded |
 | Users | Admins only (signup route commented out) | Admins only — created via a script, no public signup |
-| Content managed in DB | Aktuality, galleries, propozice (static page) | + **Výsledky**, **site settings** (race date, ročník, registration link/toggle), **partners** |
+| Content managed in DB | Aktuality, galleries, propozice (static page) | + **Výsledky**, **site settings** (registration link/toggle), **partners** |
 | Content hard-coded in git | `vysledky.json`, register-button URL, sponsor logos, **all page copy** (home hero, Sayfy bio + photos, Kontakt details, socials, SEO defaults) | **Everything admin-editable**, like zive: DB + admin UI, defaults = today's copy (`08` Part B) |
 | Rich-text editor | Tiptap 2 beta: styles, headings, lists, align, images, documents, YouTube, links, tables | **Richer Tiptap 3 editor**, full parity + image replace/resize/align/alt/caption, attachments, callouts (`08` Part A) |
 
@@ -57,7 +57,8 @@ use cases, never Mongoose directly.
 
 Domain logic that genuinely deserves pure, unit-tested functions in this project:
 
-- `raceStatus(now, raceDate)` → `upcoming | raceDay | finished` (drives the hero countdown, the
+- `raceStatus(now)` → `upcoming | raceDay | finished`. The race is **always 28. 9. at 11:00 Prague**,
+  so the schedule is computed; `finished` lasts 30 days, then it counts down to next year (drives the hero countdown, the
   registration CTA and the "výsledky jsou tady" banner).
 - `slugify(title)` + `uniqueSlug(base, exists)` — Czech diacritics, punctuation-safe, collision suffix.
 - `storageKeyFromUrl(url, allowedHosts)` — map a stored full image URL back to its S3 key, refusing
@@ -95,7 +96,7 @@ sayfy-next/
 │  │  │  ├─ vysledky/page.tsx                # results CRUD (year, ročník, URL)
 │  │  │  ├─ partneri/page.tsx                # partners CRUD (name, logo, link, order)
 │  │  │  ├─ obsah/{uvod,sayfy,kontakt,podpora,web}/page.tsx   # page content CMS (08 Part B)
-│  │  │  ├─ nastaveni/page.tsx               # race date, ročník, registration URL + open/closed
+│  │  │  ├─ nastaveni/page.tsx               # registration URL + open/closed, ročník override
 │  │  │  └─ ucet/page.tsx                    # change own password
 │  │  ├─ api/
 │  │  │  ├─ auth/[...nextauth]/route.ts      # Auth.js handlers

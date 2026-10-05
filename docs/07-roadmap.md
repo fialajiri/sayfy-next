@@ -62,7 +62,8 @@ Detailed checklists live in `docs/plans/phase-*.md`.
 - **Deliverable:** full content management for galleries and propozice.
 
 ## Phase 5 — Settings, results, partners, page content · ~3–4 days
-- `admin/nastaveni`: race date/time, ročník, registration URL + open toggle (also on the dashboard).
+- `admin/nastaveni`: registration URL + open toggle (also on the dashboard), optional ročník override.
+  The race date is fixed (28. 9. 11:00 Prague) and computed.
   Drives the hero countdown, CTA and JSON-LD.
 - `admin/vysledky`: add/edit/delete a year.
 - `admin/partneri`: CRUD + order + logo upload. `scripts/seed-partners.ts` migrates the 9 legacy
@@ -119,13 +120,13 @@ richer than zive's, and every page's content becomes admin-editable.
    the domain between Vercel projects; no DNS changes needed.
 2. **Partner names + URLs** for the 9 logos in `public/logos/support` (legacy alts were `image_2`…).
    Which ones are current?
-3. **Race facts:** start time, start/finish place, the first year of the race (to confirm "since
+3. **Race facts:** ~~start time~~ (**resolved: always 28. 9. at 11:00 Prague**), start/finish place, the first year of the race (to confirm "since
    2009" and the ročník count), categories. Is a GPX of the course available (for the real
    elevation profile)?
 4. **New uploads URL host:** keep `sayfyho-memorial.s3…amazonaws.com` (like legacy rows) or serve new
    images through CloudFront `d3o6i10cj9gxf0.cloudfront.net`?
 5. **Hero footage:** is newer race video available? Is there a vector Sayfy logo?
-6. **`logs` collection:** purge after cutover (recommended, GDPR), archive, or keep?
+6. ~~**`logs` collection:**~~ **Resolved: skip it.** It was never used. It isn't cloned, modelled or written to by the new app. Dropping it from Atlas after cutover is optional cleanup.
 7. **Admins:** how many accounts exist and who are they? Confirm emails in the test copy.
 8. **Analytics:** none, Vercel Analytics (cookieless), or reinstate GA (needs a consent banner)?
 9. **Dark-mode toggle** visible to visitors, or system preference only?

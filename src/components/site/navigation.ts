@@ -14,12 +14,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
 
 export type SocialLinks = { facebookUrl: string; instagramUrl: string };
 
-// Legacy values; become admin-editable via pagecontent "site" in Phase 1/5.
-export const DEFAULT_SOCIAL_LINKS: SocialLinks = {
-  facebookUrl: "https://www.facebook.com/sayfyhomemorial",
-  instagramUrl: "https://www.instagram.com/sayfyhomemorial/",
-};
-
 export function isActivePath(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);

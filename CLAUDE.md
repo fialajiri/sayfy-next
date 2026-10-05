@@ -43,7 +43,7 @@ public URLs are identical to the legacy site. It also ships a **full redesign** 
 **everything admin-editable** (like zive-teplice).
 
 **Read `docs/` before implementing — it is the source of truth.** Status lives in
-`docs/plans/phase-*.md` (checkboxes). Current: **Phase 0 done**, next is Phase 1.
+`docs/plans/phase-*.md` (checkboxes). Current: **Phase 1 done** (public site on real data), next is Phase 2 (auth + admin shell).
 
 - `docs/01-architecture.md` — layering, folders, data flow, what to reuse from zive-teplice
 - `docs/03-backend-plan.md` — endpoint map, uploads, S3 cleanup, legacy security holes to fix
@@ -66,7 +66,7 @@ server/infrastructure  Mongoose models/repos, S3, password crypto, rate limiter
 server/container.ts    Composition root
 ```
 
-Pages/actions call use cases, never Mongoose. Every `src/server/**` file imports `'server-only'`.
+Pages/actions call use cases, never Mongoose. Every infrastructure/container/action module imports `'server-only'` (domain + application stay pure).
 Public reads = RSC + ISR; admin writes = server actions + Zod + `requireAdmin()` + `revalidatePath`.
 
 ## Conventions specific to this repo
@@ -96,4 +96,13 @@ Public reads = RSC + ISR; admin writes = server actions + Zod + `requireAdmin()`
   the dev console `unsafe-eval` reports are expected). `frame-src` allows only sportt.cz +
   youtube-nocookie.
 - `/admin/styleguide` is dev-only (404 in production) — visual QA for tokens/components.
-- Env: copy `.env.example` → `.env.local`. Local `MONGODB_URI` must be the **test** DB.
+- Env: copy `.env.example` → `.env.local`. Local `MONGODB_URI` must be the **test** DB
+  (`sayfyho-memorial-test`, refresh with `npm run db:clone-to-test -- --yes`; `MONGODB_URI_PROD` is only
+  read by that script). `npm run db:check` (read-only), `npm run db:seed` (test-only guard).
+- **Race schedule is fixed:** 28. 9. at 11:00 Prague, computed in `server/domain/race-status.ts`.
+  Never store a race date.
+- **Legacy data quirks:** news slugs contain `!` `,` `.`, so look them up exactly as stored (decode the route
+  param). S3 keys contain spaces, so URLs pass through `encodeImageUrl` in the repositories.
+- **Never put a `loading.tsx` above a route that calls `notFound()`**: streaming makes the 404 a 200.
+- Use cases live in `server/application` (pure, take ports as args); `server/container.ts` wires repos.
+  Page copy comes from `getPageContent(container.pageContent, key)`.

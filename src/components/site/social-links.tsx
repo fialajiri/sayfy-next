@@ -1,16 +1,10 @@
 import { cn } from "@/lib/utils";
-import {
-  DEFAULT_SOCIAL_LINKS,
-  type SocialLinks as SocialLinksData,
-} from "./navigation";
+import type { SocialLinks as SocialLinksData } from "./navigation";
 import { FacebookIcon, InstagramIcon } from "./social-icons";
 
-type SocialLinksProps = { links?: SocialLinksData; className?: string };
+type SocialLinksProps = { links: SocialLinksData; className?: string };
 
-export function SocialLinks({
-  links = DEFAULT_SOCIAL_LINKS,
-  className,
-}: SocialLinksProps) {
+export function SocialLinks({ links, className }: SocialLinksProps) {
   const items = [
     { href: links.facebookUrl, label: "Facebook", Icon: FacebookIcon },
     { href: links.instagramUrl, label: "Instagram", Icon: InstagramIcon },

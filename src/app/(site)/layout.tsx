@@ -1,7 +1,14 @@
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
+import { getPageContent } from "@/server/application/page-content";
+import { container } from "@/server/container";
 
-export default function SiteLayout({ children }: LayoutProps<"/">) {
+export default async function SiteLayout({ children }: LayoutProps<"/">) {
+  const site = await getPageContent(container.pageContent, "site");
+  const socialLinks = {
+    facebookUrl: site.facebookUrl,
+    instagramUrl: site.instagramUrl,
+  };
   return (
     <>
       <a
@@ -10,11 +17,11 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       >
         Přeskočit na obsah
       </a>
-      <SiteHeader />
+      <SiteHeader socialLinks={socialLinks} />
       <main id="obsah" className="flex-1">
         {children}
       </main>
-      <SiteFooter />
+      <SiteFooter socialLinks={socialLinks} tagline={site.footerTagline} />
     </>
   );
 }

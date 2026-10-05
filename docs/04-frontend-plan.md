@@ -46,7 +46,7 @@ route that resolves the slug to an id and redirects.
 `button`, `input`, `textarea`, `label`, `field` (RHF+Zod messages), `switch` (registration toggle),
 `select`, `dialog`, `alert-dialog` (destructive confirms), `sheet` (mobile nav, admin sidebar on
 mobile), `dropdown-menu`, `table`, `card`, `badge`, `skeleton`, `sonner`, `tooltip`, `pagination`,
-`separator`, `calendar` + `popover` (race-date picker), `progress` (uploads), `sidebar` (admin shell).
+`separator`, `popover`, `progress` (uploads), `sidebar` (admin shell).
 Copy zive's already-generated files where they exist; generate the rest with the CLI.
 
 ### Site components (`components/site/`)

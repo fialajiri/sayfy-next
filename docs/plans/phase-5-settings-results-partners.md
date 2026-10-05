@@ -9,7 +9,7 @@
 `components/admin/registration-toggle.tsx`, `server/actions/settings.ts` (shape).
 
 **Exit criteria:**
-- [ ] Changing race date/ročník in `/admin/nastaveni` updates the hero countdown, facts strip,
+- [ ] Changing the ročník override in `/admin/nastaveni` updates the hero, facts strip,
       propozice quick facts and JSON-LD immediately.
 - [ ] Toggling registration (also on the dashboard) shows or hides the CTA everywhere.
 - [ ] Adding "2027 · 17. ročník · URL" creates `/vysledky/2027` and a bib card on home/výsledky.
@@ -20,9 +20,8 @@
       legacy copy.
 
 ## ⚠️ Key gotchas
-1. **Dates/timezones:** store `raceDate` as a UTC `Date`; the admin enters a local date + time in
-   `Europe/Prague`. Convert explicitly (date-fns + `Intl`) and never rely on the server's TZ
-   (Vercel = UTC).
+1. **No race-date setting:** the race is always 28. 9. at 11:00 Prague, computed in
+   `domain/race-status.ts` (DST-safe, tested). Don't add a date field.
 2. **Settings is a singleton** (`_id:'site'`): `findOneAndUpdate(..., {upsert:true})`; reads fall
    back to defaults so a missing doc never breaks the home page.
 3. **Results URL in an iframe:** CSP `frame-src` only allows sportt.cz. If an admin enters another
@@ -35,8 +34,8 @@
 - [ ] `schemas/settings.ts` (date, time, edition ≥1, `registrationUrl` https, `registrationOpen`).
 - [ ] `application/settings.ts` `updateSettings`, `setRegistrationOpen`. Actions revalidate `/`,
       `/propozice`, `/vysledky`.
-- [ ] `admin/nastaveni/page.tsx`: date picker (shadcn calendar + popover) + time input, edition,
-      URL, switch, with a preview of the countdown state.
+- [ ] `admin/nastaveni/page.tsx`: registration URL + switch, ročník override (empty = derived),
+      with a preview of the countdown state.
 - [ ] Dashboard race-status card: inline switch (`useOptimistic`), "Upravit nastavení".
 
 ## 2. Results
@@ -51,6 +50,9 @@
       confirm.
 - [ ] `scripts/seed-partners.ts`: uploads the 9 `*-transparent.png` files to `partners/` and inserts
       docs. **Names/URLs come from a JSON mapping the organisers fill in** (`scripts/data/partners.json`).
+      Names identified from the logos (2026-10-05): Olympia, Kolakola, Hrob (town crest), Mature, Bombus,
+      Edgewell, Krušnohoří, Teplice, plus the **race's own wheel logo** (keep it, confirmed by the organisers).
+      Partner websites (URLs) still to be supplied.
 - [ ] Switch `/podpora` + the home partners strip to the repository.
 
 ## 4. Page content CMS (spec: `08` Part B)
@@ -71,8 +73,7 @@
 - [ ] Hero `kicker` supports `{edition}` / `{year}` tokens filled from settings (documented in the field help).
 
 ## Tests
-- [ ] Settings: TZ conversion (Prague local 10:00 on 28. 9. → 08:00Z; a date in winter → 09:00Z),
-      defaults when missing.
+- [ ] Settings: defaults when missing; edition override vs derived.
 - [ ] Results: unique year → conflict; non-sportt URL → `embeddable:false` in the DTO.
 - [ ] Partners: reorder writes all orders; replace logo deletes the old key; delete cleans up.
 - [ ] Page content: each schema rejects out-of-bounds lists and foreign image hosts; replace image →

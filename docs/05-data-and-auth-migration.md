@@ -62,14 +62,30 @@ export const StaticPage = model('StaticPage', staticPageSchema, 'staticpages')
 Do **not** declare `toJSON` transforms. Repositories map documents to plain DTOs (`id: string`,
 ISO dates) explicitly, which is also what lets RSC → client props serialise cleanly.
 
+### Verified production data (2026-10-05, `npm run db:check`)
+`aktualitas` 39 · `galleries` 12 (one per year 2015–2026, 1–199 photos each) · `staticpages` 1
+(`Propozice 2026`) · `users` 2 (both admins, both `hash.salt`) · `logs` 126 339 (**dropped from scope**:
+never used; not cloned, not modelled, see `07` Q6). All image URLs are on the S3 host; none use
+CloudFront. Test copy: **`sayfyho-memorial-test`** on the same cluster (`npm run db:clone-to-test -- --yes`).
+
+- **17 of 39 news slugs contain `!`, `,` or `.`** (e.g. `diky,-diky!-2023`,
+  `projizdka-trati-21.-9.-v-17.17!`). They're unique and none is missing. Look them up exactly as stored.
+- **S3 keys contain spaces and brackets** (`aktuality/propozice/mapy (1).png-<uuid>.png`). URL-encode
+  the path when handing it to `next/image`, and decode it in `storageKeyFromUrl`.
+- **Propozice `assets` is `[]`** although the text has 2 images, so the legacy asset tracking never
+  worked. Always derive referenced assets from the HTML.
+- **The oldest news item is `quick-test`,** probably a leftover test post. Ask before deleting it
+  (in prod, via the admin, after cutover).
+
 ### Data-quality quirks to handle (don't "fix" them in the DB)
 - **News slugs may contain punctuation** (`normalizeStringToUrl` only replaced whitespace) and are
   **stale after a title edit** (the pre-save hook wrote `staticPageUrl` by mistake). Look slugs up
   exactly as stored, with `decodeURIComponent` on the route param. New slugs use the strict `slugify`.
 - **Gallery images may reference objects that no longer exist,** or that exist with odd keys. Treat
   any URL on an allowed host as valid; render a neutral placeholder `onError` in the lightbox.
-- **The FE model had `perex`,** which doesn't exist in the DB. Drop it. The excerpt is derived from
-  `text` (strip tags, first ~160 chars) for cards and meta descriptions.
+- **`perex` exists in the data** (verified 2026-10-05, though the backend schema never declared it).
+  Declare it as optional, and use it as the excerpt when non-empty; otherwise derive the excerpt
+  from `text` (strip tags, ~160 chars).
 - **Legacy `update` wrote `video` and `imagesFromEditor`** (not in the schema, so dropped).
   `filesFromEditor` was never updated on edit. Recompute it from `text` on every save.
 - **Image URLs are full S3 URLs.** Some may be on the CloudFront host. Both are allow-listed and
@@ -83,12 +99,12 @@ ISO dates) explicitly, which is also what lets RSC → client props serialise cl
 // seed: scripts/seed-results.ts reads ../sayfy-frontend-ts/public/data/vysledky.json (rok→year, rocnik→edition)
 
 // settings — singleton { _id: "site" }
-{ raceDate: Date,            // next race, default 28. 9. of the next year at 10:00 Europe/Prague (confirm start time)
-  edition: Number,           // ročník of the next race (17 for 2027)
-  registrationUrl: String,   // e.g. https://sportt.cz/register/1544
+{ registrationUrl: String,   // e.g. https://sportt.cz/register/1544
   registrationOpen: Boolean,
+  editionOverride?: Number,  // ročník; default = latest result's edition (+1 if from an earlier year)
   updatedAt }
-// seed: raceDate 2027-09-28, edition 17, registrationUrl from register-button.tsx, registrationOpen false
+// The race date is NOT stored: it is always 28. 9. at 11:00 Europe/Prague (domain/race-status.ts).
+// seed: registrationUrl from register-button.tsx, registrationOpen false
 
 // partners — replaces public/logos/support/*-transparent.png (9 logos)
 { name: String, logoUrl: String, url?: String, order: Number, timestamps }
