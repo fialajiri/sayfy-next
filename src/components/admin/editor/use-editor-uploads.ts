@@ -4,6 +4,7 @@ import { NodeSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { useState } from "react";
 import { toast } from "sonner";
+import type { AspectId } from "../crop/aspect";
 import { uploadFile, type UploadPrefix } from "../upload/upload-client";
 
 export type EditorUploadTarget = {
@@ -35,7 +36,15 @@ export function chainAtInsertPoint(editor: Editor, position?: number) {
 
 // Files upload immediately (not at save time like the legacy editor), so a
 // failed save never loses them and a reload keeps the content consistent.
-export function useEditorUploads(target: EditorUploadTarget) {
+export type RequestCrop = (
+  file: File,
+  aspect: AspectId,
+) => Promise<File | null>;
+
+export function useEditorUploads(
+  target: EditorUploadTarget,
+  requestCrop: RequestCrop,
+) {
   const [pending, setPending] = useState(0);
 
   async function run<T>(task: () => Promise<T>): Promise<T | null> {
@@ -55,7 +64,11 @@ export function useEditorUploads(target: EditorUploadTarget) {
     files: File[],
     position?: number,
   ) {
-    for (const file of files) {
+    // A single image gets the crop step; multi-file drops upload as they are.
+    const prepared =
+      files.length === 1 ? [await requestCrop(files[0], "original")] : files;
+    for (const file of prepared) {
+      if (!file) continue;
       const src = await run(() =>
         uploadFile(file, target.prefix, target.scope),
       );
@@ -65,7 +78,11 @@ export function useEditorUploads(target: EditorUploadTarget) {
   }
 
   async function replaceImage(editor: Editor, file: File) {
-    const src = await run(() => uploadFile(file, target.prefix, target.scope));
+    const cropped = await requestCrop(file, "original");
+    if (!cropped) return;
+    const src = await run(() =>
+      uploadFile(cropped, target.prefix, target.scope),
+    );
     if (src) editor.chain().focus().updateAttributes("image", { src }).run();
   }
 

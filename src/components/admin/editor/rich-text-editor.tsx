@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  EditorContent,
-  useEditor,
-  useEditorState,
-  type Editor,
-} from "@tiptap/react";
+import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import { useRef, useState, type ChangeEvent } from "react";
 import { RichText } from "@/components/site/rich-text";
+import { useImageCrop } from "../crop/use-image-crop";
 import { cn } from "@/lib/utils";
 import { DOCUMENT_ACCEPT, IMAGE_ACCEPT } from "../upload/upload-client";
 import {
@@ -41,6 +37,15 @@ type RichTextEditorProps = {
 
 type OpenDialog = "link" | "youtube" | "image" | null;
 
+type EditorStats = { words: number; missingAlt: number };
+
+function statsOf(editor: Editor): EditorStats {
+  return {
+    words: editor.storage.characterCount.words() as number,
+    missingAlt: missingAltCount(editor),
+  };
+}
+
 function missingAltCount(editor: Editor): number {
   let missing = 0;
   editor.state.doc.descendants((node) => {
@@ -58,9 +63,13 @@ export function RichTextEditor({
   labelledBy,
   invalid,
 }: RichTextEditorProps) {
-  const uploads = useEditorUploads(upload);
+  const { requestCrop, cropDialog } = useImageCrop();
+  const uploads = useEditorUploads(upload, requestCrop);
   const [preview, setPreview] = useState(false);
   const [dialog, setDialog] = useState<OpenDialog>(null);
+  // Computed on create AND on update: existing content (legacy images without
+  // alt) must be flagged before the first edit.
+  const [stats, setStats] = useState<EditorStats>({ words: 0, missingAlt: 0 });
   const imageInput = useRef<HTMLInputElement>(null);
   const replaceInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -78,18 +87,11 @@ export function RichTextEditor({
         role: "textbox",
       },
     },
-    onUpdate: ({ editor: e }) => onChange(e.getHTML()),
-  });
-
-  const stats = useEditorState({
-    editor,
-    selector: ({ editor: e }) =>
-      e
-        ? {
-            words: e.storage.characterCount.words() as number,
-            missingAlt: missingAltCount(e),
-          }
-        : { words: 0, missingAlt: 0 },
+    onCreate: ({ editor: e }) => setStats(statsOf(e)),
+    onUpdate: ({ editor: e }) => {
+      onChange(e.getHTML());
+      setStats(statsOf(e));
+    },
   });
 
   if (!editor)
@@ -147,8 +149,7 @@ export function RichTextEditor({
     onYoutube: () => setDialog("youtube"),
     onLink: openLink,
   };
-  const words = stats?.words ?? 0;
-  const missingAlt = stats?.missingAlt ?? 0;
+  const { words, missingAlt } = stats;
 
   const link = editor.getAttributes("link") as {
     href?: string;
@@ -218,6 +219,7 @@ export function RichTextEditor({
         hidden
         onChange={handleAttachmentFile}
       />
+      {cropDialog}
       {dialog === "link" && (
         <LinkDialog
           open

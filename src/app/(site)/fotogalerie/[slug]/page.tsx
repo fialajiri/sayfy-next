@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { photoCountLabel } from "@/components/site/gallery-tile";
 import { PageHeader } from "@/components/site/page-header";
 import { PhotoGrid } from "@/components/site/photo-grid";
@@ -21,7 +21,9 @@ async function load(params: PageProps<"/fotogalerie/[slug]">["params"]) {
   );
   if (!result.ok && result.error.kind === "not_found") notFound();
   if (!result.ok) throw new Error(result.error.message);
-  return result.value;
+  if (result.value.kind === "moved")
+    permanentRedirect(`/fotogalerie/${encodeURIComponent(result.value.slug)}`);
+  return result.value.value;
 }
 
 export async function generateMetadata({

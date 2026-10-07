@@ -40,7 +40,7 @@ export function MemorialBand({ content, sayfy }: MemorialBandProps) {
           </p>
           <Link
             href="/sayfy"
-            className="text-primary inline-flex items-center gap-1.5 font-medium hover:underline"
+            className="text-sayfy-900 inline-flex items-center gap-1.5 font-medium hover:underline"
           >
             {content.linkLabel}
             <ArrowRightIcon className="size-4" aria-hidden="true" />

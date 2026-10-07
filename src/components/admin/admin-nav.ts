@@ -37,13 +37,11 @@ export const ADMIN_NAV: readonly AdminNavGroup[] = [
         href: "/admin/fotogalerie",
         label: "Fotogalerie",
         icon: ImagesIcon,
-        phase: 4,
       },
       {
         href: "/admin/propozice",
         label: "Propozice",
         icon: FileTextIcon,
-        phase: 4,
       },
       {
         href: "/admin/vysledky",

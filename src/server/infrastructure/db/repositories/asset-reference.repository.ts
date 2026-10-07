@@ -19,15 +19,20 @@ function variants(url: string): string[] {
   return [...out];
 }
 
+function notId(id?: string) {
+  return id && Types.ObjectId.isValid(id)
+    ? { _id: { $ne: new Types.ObjectId(id) } }
+    : {};
+}
+
 export const assetReferenceRepository: AssetReferenceChecker = {
   async stillReferenced(urls, except) {
     if (urls.length === 0) return new Set();
     await connectToDatabase();
     const referenced = new Set<string>();
-    const exceptNews =
-      except.newsId && Types.ObjectId.isValid(except.newsId)
-        ? { _id: { $ne: new Types.ObjectId(except.newsId) } }
-        : {};
+    const exceptNews = notId(except.newsId);
+    const exceptGallery = notId(except.galleryId);
+    const exceptPage = notId(except.staticPageId);
 
     for (const url of urls) {
       const forms = variants(url);
@@ -40,8 +45,9 @@ export const assetReferenceRepository: AssetReferenceChecker = {
             { filesFromEditor: { $in: forms } },
           ],
         }),
-        GalleryModel.exists({ images: { $in: forms } }),
+        GalleryModel.exists({ ...exceptGallery, images: { $in: forms } }),
         StaticPageModel.exists({
+          ...exceptPage,
           $or: [
             { assets: { $in: forms } },
             { text: { $regex: escapeRegex(forms[0]) } },

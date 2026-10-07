@@ -83,6 +83,12 @@ these for light and dark, so generated components pick up the brand automaticall
 dark mode, and `ink-muted` (#4b5650, 7.0 on paper) for secondary text. Tokens live in
 `src/app/globals.css`.
 
+**Forced theme scopes:** a section that forces a theme (`class="light"` / `"dark"`) must also reset
+`color` — it's inherited as a computed value, so swapping only the variables left dark-mode text
+(near-white) on the always-light admin (found in review, fixed in `globals.css`). Verified with
+`scripts/e2e/contrast-audit.playwright.js`: 16 routes × dark/light, all text ≥ 4.5:1 (large ≥ 3:1).
+`sayfy-700` on `paper-2` is only 4.35:1 — use `sayfy-900` for small text on `paper-2`.
+
 ### Dark mode
 Support both themes (`next-themes`, system default + toggle in the footer). Dark mode = `asphalt-950`
 background, `paper` text, and `sayfy-500` becomes usable for text (≈6:1 on asphalt). The **hero and

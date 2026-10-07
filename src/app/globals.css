@@ -204,6 +204,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  /*
+   * A forced theme scope must also reset `color`: it is inherited as an
+   * already-computed value, so swapping only the variables left dark-mode
+   * text (near-white "paper") on light admin cards — invisible.
+   */
+  .light,
+  .dark {
+    color: var(--foreground);
+  }
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;

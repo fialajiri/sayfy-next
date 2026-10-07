@@ -6,3 +6,5 @@ coverage
 package-lock.json
 public
 *.md
+scripts/e2e
+.playwright-mcp

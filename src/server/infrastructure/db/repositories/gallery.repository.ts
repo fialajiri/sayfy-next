@@ -1,8 +1,10 @@
 import "server-only";
+import { Types } from "mongoose";
 import {
   compareGalleries,
   yearFromTitle,
   type GalleryDetail,
+  type GalleryRecord,
   type GalleryRepository,
   type GallerySummary,
 } from "@/server/domain/gallery";
@@ -25,6 +27,23 @@ function toSummary(row: SummaryRow): GallerySummary {
     count: row.count,
   };
 }
+
+function toRecord(doc: GalleryDocument): GalleryRecord {
+  return {
+    id: doc._id.toString(),
+    title: doc.title,
+    slug: doc.galleryUrl,
+    previousSlugs: doc.previousSlugs ?? [],
+    images: doc.images ?? [],
+    updatedAt: doc.updatedAt.toISOString(),
+  };
+}
+
+const valid = (id: string) => Types.ObjectId.isValid(id);
+const notId = (exceptId?: string) =>
+  exceptId && valid(exceptId)
+    ? { _id: { $ne: new Types.ObjectId(exceptId) } }
+    : {};
 
 export const galleryRepository: GalleryRepository = {
   // Galleries hold up to ~200 URLs each — return only cover + count for lists.
@@ -59,5 +78,89 @@ export const galleryRepository: GalleryRepository = {
       images,
     };
     return detail;
+  },
+
+  async findCurrentSlug(previousSlug) {
+    await connectToDatabase();
+    const doc = await GalleryModel.findOne(
+      { previousSlugs: previousSlug },
+      { galleryUrl: 1 },
+    ).lean<Pick<GalleryDocument, "galleryUrl">>();
+    return doc?.galleryUrl ?? null;
+  },
+
+  async findById(id) {
+    if (!valid(id)) return null;
+    await connectToDatabase();
+    const doc = await GalleryModel.findById(id).lean<GalleryDocument>();
+    return doc ? toRecord(doc) : null;
+  },
+
+  async titleTaken(title, exceptId) {
+    await connectToDatabase();
+    return (await GalleryModel.exists({ title, ...notId(exceptId) })) !== null;
+  },
+
+  async slugTaken(slug, exceptId) {
+    await connectToDatabase();
+    return (
+      (await GalleryModel.exists({
+        $or: [{ galleryUrl: slug }, { previousSlugs: slug }],
+        ...notId(exceptId),
+      })) !== null
+    );
+  },
+
+  async create({ title, slug }) {
+    await connectToDatabase();
+    const doc = await GalleryModel.create({
+      title,
+      galleryUrl: slug,
+      images: [],
+      previousSlugs: [],
+    });
+    return toRecord(doc.toObject());
+  },
+
+  async rename(id, { title, slug, previousSlugs }) {
+    if (!valid(id)) return null;
+    await connectToDatabase();
+    const doc = await GalleryModel.findByIdAndUpdate(
+      id,
+      { $set: { title, galleryUrl: slug, previousSlugs } },
+      { new: true },
+    ).lean<GalleryDocument>();
+    return doc ? toRecord(doc) : null;
+  },
+
+  async appendImages(id, urls) {
+    if (!valid(id)) return null;
+    await connectToDatabase();
+    const doc = await GalleryModel.findByIdAndUpdate(
+      id,
+      { $push: { images: { $each: urls } } },
+      { new: true },
+    ).lean<GalleryDocument>();
+    return doc ? toRecord(doc) : null;
+  },
+
+  async setImages(id, images, expectedUpdatedAt) {
+    if (!valid(id)) return null;
+    await connectToDatabase();
+    const doc = await GalleryModel.findOneAndUpdate(
+      { _id: id, updatedAt: new Date(expectedUpdatedAt) },
+      { $set: { images } },
+      { new: true },
+    ).lean<GalleryDocument>();
+    if (doc) return toRecord(doc);
+    return (await GalleryModel.exists({ _id: id })) ? "conflict" : null;
+  },
+
+  async delete(id) {
+    if (!valid(id)) return null;
+    await connectToDatabase();
+    const doc =
+      await GalleryModel.findByIdAndDelete(id).lean<GalleryDocument>();
+    return doc ? toRecord(doc) : null;
   },
 };

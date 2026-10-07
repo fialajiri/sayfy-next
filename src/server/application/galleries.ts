@@ -21,13 +21,20 @@ export async function listGalleries(
   }
 }
 
+export type GalleryLookup =
+  { kind: "found"; value: GalleryDetail } | { kind: "moved"; slug: string };
+
 export async function getGallery(
   repo: GalleryRepository,
   slug: string,
-): Promise<Result<GalleryDetail>> {
+): Promise<Result<GalleryLookup>> {
   try {
     const gallery = await repo.findBySlug(slug);
-    return gallery ? ok(gallery) : err(notFound("Fotogalerie nenalezena."));
+    if (gallery) return ok({ kind: "found", value: gallery });
+    const current = await repo.findCurrentSlug(slug);
+    return current
+      ? ok({ kind: "moved", slug: current })
+      : err(notFound("Fotogalerie nenalezena."));
   } catch {
     return err(unexpected("Nepodařilo se načíst fotogalerii."));
   }

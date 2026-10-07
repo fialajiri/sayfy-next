@@ -6,6 +6,7 @@ export type GalleryDocument = {
   title: string;
   images: string[];
   galleryUrl: string;
+  previousSlugs?: string[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -15,6 +16,7 @@ const gallerySchema = new Schema<GalleryDocument>(
     title: { type: String, required: true, unique: true },
     images: [{ type: String }],
     galleryUrl: { type: String, index: true },
+    previousSlugs: [{ type: String }],
   },
   { timestamps: true },
 );

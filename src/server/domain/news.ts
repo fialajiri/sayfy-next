@@ -75,6 +75,6 @@ export type NewsRepository = {
 export type AssetReferenceChecker = {
   stillReferenced(
     urls: readonly string[],
-    except: { newsId?: string },
+    except: { newsId?: string; galleryId?: string; staticPageId?: string },
   ): Promise<Set<string>>;
 };

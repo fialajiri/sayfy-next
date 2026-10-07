@@ -17,7 +17,8 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const admin = await requireAdminPage("/admin");
   return (
-    <SidebarProvider>
+    // The admin is always light, whatever the visitor theme (docs/06 §10).
+    <SidebarProvider className="light bg-paper text-foreground">
       <AdminSidebar email={admin.email} />
       <SidebarInset className="light bg-paper">
         <header className="bg-background/90 sticky top-0 z-10 flex h-14 items-center gap-2 border-b px-4 backdrop-blur md:hidden">

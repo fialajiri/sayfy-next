@@ -53,6 +53,11 @@ Legacy problems we fix: `window.prompt()` for links and YouTube; images uploaded
   - **Zarovnání:** left / center / right (the screenshot's centred course map is the common case).
     Left/right float with text wrap on ≥md; on mobile always full width.
   - **Odkaz z obrázku** (wrap the image in a link) and **Smazat**.
+  - **Crop step** (as in zive-teplice, added after review): every single-image upload — the news main
+    photo (default 4:3), editor inserts/drops/pastes and "Vyměnit obrázek" (default "Původní") — opens
+    a crop dialog with presets *Původní / 4:3 / 3:2 / 16:9 / 1:1*, zoom, "Použít bez oříznutí" and
+    "Zrušit". Multi-file drops and gallery bulk uploads skip it. Transparent images are flattened onto
+    white (zive's version turned them black).
 - **Links:** dialog (not `prompt`): URL, text, "otevřít v novém okně". Bubble menu on a link:
   *upravit / otevřít / odebrat*. Autolink on paste. Internal links (`/vysledky/2026`) allowed.
 - **File attachments** (**confirmed: in every full-editor field**, incl. aktuality, not just

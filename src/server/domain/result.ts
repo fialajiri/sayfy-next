@@ -7,6 +7,7 @@ export type FieldErrors = Record<string, string[]>;
 export type DomainError =
   | { kind: "not_found"; message: string }
   | { kind: "validation"; message: string; fieldErrors?: FieldErrors }
+  | { kind: "conflict"; message: string }
   | { kind: "unexpected"; message: string };
 
 export type Result<T, E = DomainError> =
@@ -33,4 +34,8 @@ export function validation(
 
 export function unexpected(message: string): DomainError {
   return { kind: "unexpected", message };
+}
+
+export function conflict(message: string): DomainError {
+  return { kind: "conflict", message };
 }

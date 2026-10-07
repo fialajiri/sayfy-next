@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import type { AspectId } from "./crop/aspect";
+import { useImageCrop } from "./crop/use-image-crop";
 import {
   IMAGE_ACCEPT,
   uploadFile,
@@ -20,6 +22,8 @@ type ImageFieldProps = {
   scope: string;
   invalid?: boolean;
   describedBy?: string;
+  /** Crop step before upload; null skips it (e.g. logos). Default 4:3. */
+  cropAspect?: AspectId | null;
 };
 
 // Single image: preview, upload (click or drop), replace, remove (docs/04).
@@ -31,12 +35,18 @@ export function ImageField({
   scope,
   invalid,
   describedBy,
+  cropAspect = "4:3",
 }: ImageFieldProps) {
   const input = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
+  const { requestCrop, cropDialog } = useImageCrop();
   const [dragOver, setDragOver] = useState(false);
 
-  async function upload(file: File) {
+  async function upload(original: File) {
+    const file = cropAspect
+      ? await requestCrop(original, cropAspect)
+      : original;
+    if (!file) return; // crop cancelled
     setProgress(0);
     try {
       onChange(await uploadFile(file, prefix, scope, setProgress));
@@ -146,6 +156,7 @@ export function ImageField({
         hidden
         onChange={handleFile}
       />
+      {cropDialog}
     </div>
   );
 }

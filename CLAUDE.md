@@ -41,7 +41,7 @@ public URLs are identical to the legacy site. It also ships a **full redesign** 
 **everything admin-editable** (like zive-teplice).
 
 **Read `docs/` before implementing — it is the source of truth.** Status lives in
-`docs/plans/phase-*.md` (checkboxes). Current: **Phase 3 done** (news CRUD, uploads, full editor), next is Phase 4 (galleries + propozice).
+`docs/plans/phase-*.md` (checkboxes). Current: **Phase 4 done** (galleries, bulk upload, propozice editing), next is Phase 5 (settings, results, partners, page content).
 
 - `docs/01-architecture.md` — layering, folders, data flow, what to reuse from zive-teplice
 - `docs/03-backend-plan.md` — endpoint map, uploads, S3 cleanup, legacy security holes to fix
