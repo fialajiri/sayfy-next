@@ -7,11 +7,9 @@ the DocsExplorer subagent) — most of this stack is newer than your training da
 
 @AGENTS.md
 
-> **This is Next.js 16.3, not the version in your training data.** Note: unlike 16.2, the 16.3
-> package **no longer ships `node_modules/next/dist/docs/`** even though `AGENTS.md` points there.
-> Use context7 for 16.3 specifics; the sister project's
-> `../../zive-teplice/zive-teplice-next/node_modules/next/dist/docs/` (16.2) is a local fallback.
-> Heed deprecation notices (`proxy.ts` replaces `middleware.ts`, async `params`/`searchParams`).
+> **This is Next.js 16.4, not the version in your training data.** Read the bundled guides in
+> `node_modules/next/dist/docs/` before writing framework code (16.3 omitted them; 16.4 ships them again).
+> Heed deprecation notices (`src/proxy.ts` replaces `middleware.ts`, async `params`/`searchParams`).
 
 ## Commands
 
@@ -43,7 +41,7 @@ public URLs are identical to the legacy site. It also ships a **full redesign** 
 **everything admin-editable** (like zive-teplice).
 
 **Read `docs/` before implementing — it is the source of truth.** Status lives in
-`docs/plans/phase-*.md` (checkboxes). Current: **Phase 1 done** (public site on real data), next is Phase 2 (auth + admin shell).
+`docs/plans/phase-*.md` (checkboxes). Current: **Phase 2 done** (admin login + shell), next is Phase 3 (Aktuality CRUD + uploads + full editor).
 
 - `docs/01-architecture.md` — layering, folders, data flow, what to reuse from zive-teplice
 - `docs/03-backend-plan.md` — endpoint map, uploads, S3 cleanup, legacy security holes to fix
@@ -95,7 +93,7 @@ Public reads = RSC + ISR; admin writes = server actions + Zod + `requireAdmin()`
 - **CSP** (`next.config.ts`): enforced in production, Report-Only in dev (Turbopack HMR uses eval —
   the dev console `unsafe-eval` reports are expected). `frame-src` allows only sportt.cz +
   youtube-nocookie.
-- `/admin/styleguide` is dev-only (404 in production) — visual QA for tokens/components.
+- `/styleguide` is dev-only (404 in production) — visual QA for tokens/components.
 - Env: copy `.env.example` → `.env.local`. Local `MONGODB_URI` must be the **test** DB
   (`sayfyho-memorial-test`, refresh with `npm run db:clone-to-test -- --yes`; `MONGODB_URI_PROD` is only
   read by that script). `npm run db:check` (read-only), `npm run db:seed` (test-only guard).
@@ -104,5 +102,10 @@ Public reads = RSC + ISR; admin writes = server actions + Zod + `requireAdmin()`
 - **Legacy data quirks:** news slugs contain `!` `,` `.`, so look them up exactly as stored (decode the route
   param). S3 keys contain spaces, so URLs pass through `encodeImageUrl` in the repositories.
 - **Never put a `loading.tsx` above a route that calls `notFound()`**: streaming makes the 404 a 200.
+- **Auth:** every admin page calls `requireAdminPage(path)`, and every server action/route handler calls
+  `requireAdmin()` (`server/actions/guards.ts`). The layout and `src/proxy.ts` are NOT security
+  boundaries. `guard-coverage.test.ts` enforces it for every module in `server/actions/` (login/logout
+  are the only public ones). No client SessionProvider; the public shortcut uses the `sayfy-admin` hint cookie.
+- Test admin: `test-admin@example.test` / `TEST_ADMIN_PASSWORD` (test DB only). `scripts/create-admin.ts`.
 - Use cases live in `server/application` (pure, take ports as args); `server/container.ts` wires repos.
   Page copy comes from `getPageContent(container.pageContent, key)`.

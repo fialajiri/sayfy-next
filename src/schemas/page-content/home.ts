@@ -46,10 +46,10 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
     title: "Sayfyho Memorial",
     subtitle: "Cyklistický závod na památku Davida „Sayfyho“ Seifrta",
     video: {
-      mp4Url: "/video/video.mp4",
-      webmUrl: "/video/video.webm",
+      mp4Url: "/video/hero.mp4",
+      webmUrl: "/video/hero.webm",
       poster: {
-        url: "/video/poster.jpg",
+        url: "/video/hero-poster.jpg",
         alt: "Start závodu u fotbalového hřiště v Hrobu z dronu",
       },
     },

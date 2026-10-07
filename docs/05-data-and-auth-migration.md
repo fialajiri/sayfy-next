@@ -74,8 +74,10 @@ CloudFront. Test copy: **`sayfyho-memorial-test`** on the same cluster (`npm run
   the path when handing it to `next/image`, and decode it in `storageKeyFromUrl`.
 - **Propozice `assets` is `[]`** although the text has 2 images, so the legacy asset tracking never
   worked. Always derive referenced assets from the HTML.
-- **The oldest news item is `quick-test`,** probably a leftover test post. Ask before deleting it
-  (in prod, via the admin, after cutover).
+- **`/aktuality/quick-test` is a REAL article**, "Vzpomínková vyjížďka 2022" (2022-11-09, a memorial post).
+  It was created as "quick test" and retitled, and the legacy backend never updated slugs on edit. **Do not
+  delete it.** Planned fix: rename its slug to `vzpominkova-vyjizdka-2022` with `quick-test` kept in
+  `previousSlugs` (permanent redirect), via the Phase 3 "aktualizovat URL" option, after confirmation.
 
 ### Data-quality quirks to handle (don't "fix" them in the DB)
 - **News slugs may contain punctuation** (`normalizeStringToUrl` only replaced whitespace) and are

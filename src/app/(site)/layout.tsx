@@ -1,3 +1,4 @@
+import { AdminShortcut } from "@/components/site/admin-shortcut";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { getPageContent } from "@/server/application/page-content";
@@ -22,6 +23,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <SiteFooter socialLinks={socialLinks} tagline={site.footerTagline} />
+      <AdminShortcut />
     </>
   );
 }

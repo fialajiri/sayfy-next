@@ -35,7 +35,10 @@ sitemap tests).
 ## 1. Motion & media
 - [ ] Course-profile scroll-draw, header solid-on-scroll, card hover/focus lifts, countdown digit
       flip (reduced-motion: plain update), `@starting-style` reveals.
-- [ ] Re-encode video (AV1/WebM + H.264/MP4, ~2–3 MB), `poster.avif`, play/pause control.
+- [x] Re-encode video — **done early (2026-10-07):** the legacy clip had a speed-ramped edit (two
+      ~4–5× sections), so the sped-up parts were slowed ~4× and motion-interpolated to a steady 30 fps
+      (`minterpolate` mci). 60 s, 1280×720, no audio: `hero.mp4` 5.8 MB, `hero.webm` 4.4 MB, `hero-poster.jpg`.
+      Play/pause control done in Phase 1. Optional: AVIF poster.
 - [ ] Sayfy photos → AVIF/WebP via `next/image` (static imports for blur placeholders).
 - [ ] SVG logo (light/dark variants), favicon set + `apple-icon`, `manifest.ts`.
 

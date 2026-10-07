@@ -32,7 +32,7 @@ Check these again at the start of each phase. When `typescript-eslint` widens to
 
 | Package | Version | Purpose | Replaces |
 |---|---|---|---|
-| `next` | 16.3.8 | App Router, RSC, server actions, image optimisation | `next@12.3` (Pages Router) |
+| `next` | **16.4.0** (upgraded in Phase 2) | App Router, RSC, server actions, image optimisation | `next@12.3` (Pages Router) |
 | `react` / `react-dom` | 19.3.0 | UI runtime (`useActionState`, `useOptimistic`, `<Activity>`) | `react@18.2` |
 | `next-auth` | 5.0.0-beta.32 | Credentials auth, JWT session | `jsonwebtoken`, `cookie-parser`, custom `currentUser` middleware, `AuthContext` |
 | `mongoose` | 9.11.0 | MongoDB ODM (same Atlas data) | `mongoose@6` |

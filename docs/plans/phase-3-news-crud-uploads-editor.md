@@ -34,6 +34,11 @@ inline editor images, tables, YouTube). Public pages update immediately, and rem
 6. **Slug stays put on rename** unless the admin opts in (then push the old one to `previousSlugs`).
 7. **S3 CORS** must allow `PUT` from `http://localhost:3000` and preview origins (see `docs/aws/`).
 
+## 0. Data fix to run with this phase (after confirmation)
+- [ ] "Vzpomínková vyjížďka 2022" has the legacy slug `quick-test`. Once rename-with-redirect works, rename
+      it to `vzpominkova-vyjizdka-2022` (keeping `quick-test` in `previousSlugs`). This is a production write,
+      so do it only with explicit approval (see docs/05).
+
 ## 1. Storage
 - [ ] `domain/ports/storage.ts`: `presignPut({key, contentType, contentLength})`, `deleteMany(keys)`,
       `publicUrl(key)`.
