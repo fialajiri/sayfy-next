@@ -25,4 +25,13 @@ export const settingsRepository: SettingsRepository = {
       stored.editionOverride = doc.editionOverride;
     return stored;
   },
+
+  async save(input) {
+    await connectToDatabase();
+    await SettingsModel.updateOne(
+      { _id: SETTINGS_ID },
+      { $set: input },
+      { upsert: true },
+    );
+  },
 };

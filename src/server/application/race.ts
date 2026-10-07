@@ -21,7 +21,7 @@ import {
 } from "@/server/domain/settings";
 
 export async function getSettings(
-  repo: SettingsRepository,
+  repo: Pick<SettingsRepository, "find">,
 ): Promise<SiteSettingsDto> {
   try {
     return { ...DEFAULT_SETTINGS, ...(await repo.find()) };
@@ -32,7 +32,7 @@ export async function getSettings(
 }
 
 export async function listResults(
-  repo: RaceResultRepository,
+  repo: Pick<RaceResultRepository, "list">,
 ): Promise<Result<RaceResultDto[]>> {
   try {
     return ok(await repo.list());
@@ -42,7 +42,7 @@ export async function listResults(
 }
 
 export async function getResult(
-  repo: RaceResultRepository,
+  repo: Pick<RaceResultRepository, "findByYear">,
   year: number,
 ): Promise<Result<RaceResultDto>> {
   if (!Number.isInteger(year)) return err(notFound("Výsledky nenalezeny."));
@@ -63,7 +63,10 @@ export type RaceOverview = {
 };
 
 export async function getRaceOverview(
-  deps: { settings: SettingsRepository; results: RaceResultRepository },
+  deps: {
+    settings: Pick<SettingsRepository, "find">;
+    results: Pick<RaceResultRepository, "list">;
+  },
   now: Date,
 ): Promise<RaceOverview> {
   const [settings, resultsResult] = await Promise.all([

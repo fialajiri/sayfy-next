@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { Badge } from "@/components/ui/badge";
+import { RegistrationToggle } from "@/components/admin/settings/registration-toggle";
 import {
   Card,
   CardContent,
@@ -78,10 +78,7 @@ export default async function AdminDashboardPage() {
           <CardContent className="space-y-4">
             <p className="text-lg">{raceStatusText(race)}</p>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm">Registrace:</span>
-              <Badge variant={race.registration.open ? "default" : "secondary"}>
-                {race.registration.open ? "otevřená" : "uzavřená"}
-              </Badge>
+              <RegistrationToggle open={race.registration.open} />
               <a
                 href={race.registration.url}
                 target="_blank"
@@ -92,10 +89,12 @@ export default async function AdminDashboardPage() {
                 <ArrowUpRightIcon className="size-3.5" aria-hidden="true" />
               </a>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Přepínání registrace a odkazu přibude ve fázi 5 (Nastavení
-              závodu).
-            </p>
+            <Link
+              href="/admin/nastaveni"
+              className="text-primary text-sm font-medium hover:underline"
+            >
+              Upravit nastavení závodu →
+            </Link>
           </CardContent>
         </Card>
         <ul className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
@@ -115,14 +114,6 @@ export default async function AdminDashboardPage() {
           ))}
         </ul>
       </div>
-      <p className="text-muted-foreground mt-10 text-sm">
-        Úpravy obsahu (aktuality, galerie, propozice, výsledky, partneři a texty
-        stránek) postupně přibývají — viz{" "}
-        <Link href="/" className="text-primary hover:underline">
-          web
-        </Link>
-        .
-      </p>
     </>
   );
 }

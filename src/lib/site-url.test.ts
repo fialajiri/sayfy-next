@@ -1,18 +1,23 @@
 import { siteUrl } from "./site-url";
 
 describe("siteUrl", () => {
-  const original = process.env.NEXT_PUBLIC_SITE_URL;
-  afterEach(() => {
-    process.env.NEXT_PUBLIC_SITE_URL = original;
+  it("prefers NEXT_PUBLIC_SITE_URL", () => {
+    expect(
+      siteUrl({
+        NEXT_PUBLIC_SITE_URL: "https://www.sayfy.cz",
+        VERCEL_PROJECT_PRODUCTION_URL: "x.vercel.app",
+      }).origin,
+    ).toBe("https://www.sayfy.cz");
   });
 
-  it("uses NEXT_PUBLIC_SITE_URL when valid", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "https://www.sayfy.cz";
-    expect(siteUrl().origin).toBe("https://www.sayfy.cz");
-  });
-
-  it("falls back to localhost when missing or invalid", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "not a url";
-    expect(siteUrl().origin).toBe("http://localhost:3000");
+  it("falls back to the Vercel production URL, then localhost", () => {
+    expect(
+      siteUrl({ VERCEL_PROJECT_PRODUCTION_URL: "sayfy-next.vercel.app" })
+        .origin,
+    ).toBe("https://sayfy-next.vercel.app");
+    expect(siteUrl({ NEXT_PUBLIC_SITE_URL: "not a url" }).origin).toBe(
+      "http://localhost:3000",
+    );
+    expect(siteUrl({}).origin).toBe("http://localhost:3000");
   });
 });

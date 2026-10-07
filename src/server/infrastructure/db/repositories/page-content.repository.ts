@@ -13,4 +13,13 @@ export const pageContentRepository: PageContentRepository = {
       await PageContentModel.findById(key).lean<PageContentDocument>();
     return doc?.data ?? null;
   },
+
+  async save(key, data) {
+    await connectToDatabase();
+    await PageContentModel.updateOne(
+      { _id: key },
+      { $set: { data } },
+      { upsert: true },
+    );
+  },
 };

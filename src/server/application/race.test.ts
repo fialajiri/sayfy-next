@@ -17,14 +17,14 @@ const result = (year: number, edition: number): RaceResultDto => ({
   embeddable: true,
 });
 
-const results: RaceResultRepository = {
+const results: Pick<RaceResultRepository, "list" | "findByYear"> = {
   list: async () => [result(2026, 16), result(2025, 15)],
   findByYear: async () => null,
 };
 
 describe("getSettings", () => {
   it("fails safe — registration closed — when the DB is down", async () => {
-    const down: SettingsRepository = {
+    const down: Pick<SettingsRepository, "find"> = {
       find: async () => {
         throw new Error("down");
       },
@@ -37,7 +37,7 @@ describe("getSettings", () => {
 });
 
 describe("getRaceOverview", () => {
-  const settings: SettingsRepository = {
+  const settings: Pick<SettingsRepository, "find"> = {
     find: async () => ({ registrationOpen: true }),
   };
 

@@ -13,6 +13,18 @@ export type RaceResultRepository = {
   /** Newest year first. */
   list(): Promise<RaceResultDto[]>;
   findByYear(year: number): Promise<RaceResultDto | null>;
+  // admin
+  yearTaken(year: number, exceptId?: string): Promise<boolean>;
+  create(input: RaceResultInput): Promise<RaceResultDto>;
+  update(id: string, input: RaceResultInput): Promise<RaceResultDto | null>;
+  delete(id: string): Promise<RaceResultDto | null>;
+};
+
+export type RaceResultInput = {
+  year: number;
+  edition: number;
+  url: string;
+  note: string;
 };
 
 const EMBEDDABLE_HOSTS = ["sportt.cz", "www.sportt.cz"];

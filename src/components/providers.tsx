@@ -17,7 +17,8 @@ export function Providers({ children }: ProvidersProps) {
     >
       <TooltipProvider>
         {children}
-        <Toaster richColors closeButton />
+        {/* top: admin forms keep their sticky save bar at the bottom */}
+        <Toaster richColors closeButton position="top-right" />
       </TooltipProvider>
     </ThemeProvider>
   );

@@ -3,7 +3,7 @@ import { DEFAULT_SITE_CONTENT } from "@/schemas/page-content/site";
 import type { PageContentRepository } from "@/server/domain/page-content";
 import { getPageContent } from "./page-content";
 
-function repoReturning(value: unknown): PageContentRepository {
+function repoReturning(value: unknown): Pick<PageContentRepository, "findRaw"> {
   return { findRaw: async () => value };
 }
 
@@ -33,7 +33,7 @@ describe("getPageContent", () => {
   });
 
   it("falls back to defaults when the database fails", async () => {
-    const failing: PageContentRepository = {
+    const failing: Pick<PageContentRepository, "findRaw"> = {
       findRaw: async () => {
         throw new Error("down");
       },

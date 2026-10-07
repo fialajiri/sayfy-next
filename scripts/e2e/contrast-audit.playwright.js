@@ -1,8 +1,8 @@
 // WCAG contrast audit (Playwright "run code" snippet): every visible text node vs its
 // effective background, all listed routes, dark + light. Run against `next start` on :3100
-// with the test admin ALREADY logged in in that browser (no credentials in this file). Used to verify the fix for invisible admin text (Phase 4).
+// with the test admin ALREADY logged in in that browser (no credentials in this file). Used to verify the fix for invisible admin text (Phase 4); Phase 5 admin routes added.
 async (page) => {
-  const pages = ['/admin', '/admin/aktuality', '/admin/aktuality/nova', '/admin/fotogalerie', '/admin/fotogalerie/635ad3cddb22aba901ec3d42', '/admin/propozice', '/admin/ucet', '/', '/sayfy', '/aktuality', '/propozice', '/fotogalerie', '/vysledky', '/kontakt', '/podpora', '/prihlaseni'];
+  const pages = ['/admin', '/admin/aktuality', '/admin/aktuality/nova', '/admin/fotogalerie', '/admin/fotogalerie/635ad3cddb22aba901ec3d42', '/admin/propozice', '/admin/vysledky', '/admin/partneri', '/admin/nastaveni', '/admin/obsah/uvod', '/admin/obsah/sayfy', '/admin/obsah/kontakt', '/admin/obsah/podpora', '/admin/obsah/web', '/admin/ucet', '/', '/sayfy', '/aktuality', '/propozice', '/fotogalerie', '/vysledky', '/kontakt', '/podpora', '/prihlaseni'];
   const out = []; page.removeAllListeners('dialog'); page.on('dialog', (d) => d.accept().catch(() => {}));
   for (const scheme of ['dark', 'light']) {
     await page.emulateMedia({ colorScheme: scheme });

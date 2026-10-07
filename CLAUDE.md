@@ -41,7 +41,7 @@ public URLs are identical to the legacy site. It also ships a **full redesign** 
 **everything admin-editable** (like zive-teplice).
 
 **Read `docs/` before implementing — it is the source of truth.** Status lives in
-`docs/plans/phase-*.md` (checkboxes). Current: **Phase 4 done** (galleries, bulk upload, propozice editing), next is Phase 5 (settings, results, partners, page content).
+`docs/plans/phase-*.md` (checkboxes). Current: **Phase 5 done** (settings, results, partners, page-content CMS under `/admin/obsah/*`), next is Phase 6 (polish, SEO, CSP).
 
 - `docs/01-architecture.md` — layering, folders, data flow, what to reuse from zive-teplice
 - `docs/03-backend-plan.md` — endpoint map, uploads, S3 cleanup, legacy security holes to fix
@@ -82,7 +82,10 @@ Public reads = RSC + ISR; admin writes = server actions + Zod + `requireAdmin()`
 - **Fonts:** Barlow Condensed (`font-display`, brand headings), Geist (`font-sans`/`font-heading`, UI),
   Geist Mono (numbers). All `latin-ext`. `next/font` options must be inline literals.
 - **No visitor-facing copy literals in JSX** from Phase 1 on — page copy comes from `pagecontents`
-  with defaults (docs/08 §B4). UI chrome (button labels, aria) is fine.
+  with defaults (docs/08 §B4). UI chrome (button labels, aria) is fine. A new editable field =
+  schema + `DEFAULT_*` in `schemas/page-content/*` + an input in `components/admin/content/*-form.tsx`
+  (`TextInput`/`ImageRefInput`/`RichTextInput`/… by dotted path); new file URL keys must be listed in
+  `fileUrlsOf` (page-content-admin) so they're validated and cleaned up.
 - **Legacy password compat:** single `password` field `"<hashHex>.<saltHex>"`, pbkdf2 25000 / 512 /
   sha256, salt = hex **string**. Unit-test against a real (redacted) stored value.
 - **Pinned deps:** TypeScript **6.x** (not 7 — typescript-eslint peer `<6.1`), ESLint **9.x** (not 10

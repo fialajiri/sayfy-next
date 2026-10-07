@@ -10,6 +10,8 @@ export type SiteSettingsDto = {
 export type SettingsRepository = {
   /** Stored settings, or null when the singleton doc doesn't exist yet. */
   find(): Promise<Partial<SiteSettingsDto> | null>;
+  /** Upsert the singleton; returns the full stored state. */
+  save(input: SiteSettingsDto): Promise<void>;
 };
 
 // Fallback so a missing document never breaks the home page.

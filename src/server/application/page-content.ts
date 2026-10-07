@@ -15,7 +15,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * back to the defaults, so a bad document can never break a public page.
  */
 export async function getPageContent<K extends PageKey>(
-  repo: PageContentRepository,
+  repo: Pick<PageContentRepository, "findRaw">,
   key: K,
 ): Promise<PageContent<K>> {
   const { schema, defaults } = PAGE_CONTENT[key];

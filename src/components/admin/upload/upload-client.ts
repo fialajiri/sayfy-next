@@ -103,8 +103,10 @@ export async function uploadFile(
   prefix: UploadPrefix,
   scope: string,
   onProgress?: (percent: number) => void,
+  options: { compress?: boolean } = {},
 ): Promise<string> {
-  const isImage = file.type.startsWith("image/");
+  // Logos must keep PNG transparency, so they skip the JPEG re-encode.
+  const isImage = file.type.startsWith("image/") && options.compress !== false;
   if (isImage && file.size > MAX_ORIGINAL_IMAGE_BYTES)
     throw new UploadError("Obrázek je příliš velký.");
   const prepared = isImage ? await compressImage(file) : file;

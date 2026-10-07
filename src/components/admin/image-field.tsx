@@ -24,6 +24,8 @@ type ImageFieldProps = {
   describedBy?: string;
   /** Crop step before upload; null skips it (e.g. logos). Default 4:3. */
   cropAspect?: AspectId | null;
+  /** false keeps the file as is (PNG logos with transparency). */
+  compress?: boolean;
 };
 
 // Single image: preview, upload (click or drop), replace, remove (docs/04).
@@ -36,6 +38,7 @@ export function ImageField({
   invalid,
   describedBy,
   cropAspect = "4:3",
+  compress = true,
 }: ImageFieldProps) {
   const input = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
@@ -49,7 +52,9 @@ export function ImageField({
     if (!file) return; // crop cancelled
     setProgress(0);
     try {
-      onChange(await uploadFile(file, prefix, scope, setProgress));
+      onChange(
+        await uploadFile(file, prefix, scope, setProgress, { compress }),
+      );
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Nahrání se nepodařilo.",

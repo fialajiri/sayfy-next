@@ -18,7 +18,14 @@ export const richTextSchema = z.string().max(50_000);
 
 export const linkSchema = z.object({
   label: z.string().min(1).max(60),
-  href: z.string().min(1).max(500),
+  href: z
+    .string()
+    .min(1)
+    .max(500)
+    .regex(
+      /^(\/|https:\/\/|mailto:|tel:)/,
+      "Odkaz musí začínat /, https://, mailto: nebo tel:",
+    ),
 });
 export type LinkRef = z.infer<typeof linkSchema>;
 
