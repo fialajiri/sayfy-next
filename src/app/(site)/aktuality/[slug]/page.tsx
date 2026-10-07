@@ -2,7 +2,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { PhotoGrid } from "@/components/site/photo-grid";
 import { RichText } from "@/components/site/rich-text";
 import { formatDateLong, isoDay } from "@/lib/dates";
@@ -24,7 +24,9 @@ async function load(params: PageProps<"/aktuality/[slug]">["params"]) {
   );
   if (!result.ok && result.error.kind === "not_found") notFound();
   if (!result.ok) throw new Error(result.error.message);
-  return result.value;
+  if (result.value.kind === "moved")
+    permanentRedirect(`/aktuality/${encodeURIComponent(result.value.slug)}`);
+  return result.value.value;
 }
 
 export async function generateMetadata({
@@ -41,6 +43,16 @@ export async function generateMetadata({
       images: [{ url: article.mainPhoto }],
     },
   };
+}
+
+// Legacy perex is HTML ("<p>…</p>"), new ones are plain text.
+function Perex({ html }: { html: string }) {
+  const isHtml = /<[a-z][\s\S]*>/i.test(html);
+  return isHtml ? (
+    <RichText html={html} className="mx-auto text-xl font-medium" />
+  ) : (
+    <p className="mx-auto max-w-prose text-xl font-medium">{html}</p>
+  );
 }
 
 function AdjacentLink({
@@ -108,6 +120,7 @@ export default async function AktualitaPage({
       </header>
 
       <div className="max-w-content mx-auto space-y-12 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        {article.perex && <Perex html={article.perex} />}
         <div className="bg-muted relative mx-auto aspect-[3/2] max-w-prose overflow-hidden rounded-2xl border">
           <Image
             src={article.mainPhoto}

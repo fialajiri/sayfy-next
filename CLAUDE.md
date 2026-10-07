@@ -41,7 +41,7 @@ public URLs are identical to the legacy site. It also ships a **full redesign** 
 **everything admin-editable** (like zive-teplice).
 
 **Read `docs/` before implementing — it is the source of truth.** Status lives in
-`docs/plans/phase-*.md` (checkboxes). Current: **Phase 2 done** (admin login + shell), next is Phase 3 (Aktuality CRUD + uploads + full editor).
+`docs/plans/phase-*.md` (checkboxes). Current: **Phase 3 done** (news CRUD, uploads, full editor), next is Phase 4 (galleries + propozice).
 
 - `docs/01-architecture.md` — layering, folders, data flow, what to reuse from zive-teplice
 - `docs/03-backend-plan.md` — endpoint map, uploads, S3 cleanup, legacy security holes to fix
@@ -106,6 +106,13 @@ Public reads = RSC + ISR; admin writes = server actions + Zod + `requireAdmin()`
   `requireAdmin()` (`server/actions/guards.ts`). The layout and `src/proxy.ts` are NOT security
   boundaries. `guard-coverage.test.ts` enforces it for every module in `server/actions/` (login/logout
   are the only public ones). No client SessionProvider; the public shortcut uses the `sayfy-admin` hint cookie.
+- **S3 safety:** uploads AND deletes are confined to the `dev/` prefix unless `VERCEL_ENV=production`
+  (`storageEnvPrefix()` in `infrastructure/storage/s3.ts`; `.env.local` sets `S3_KEY_PREFIX="dev/"`). The test
+  DB references LIVE images, so never disable this locally.
+- Editor = `components/admin/editor/` (Tiptap 3). Every feature must survive editor → `sanitizeRichText` →
+  editor (`sanitize-cycle.test.ts`). Dialogs inside the editor must `stopPropagation()` on submit (portal
+  bubbling submits the outer form).
+- Don't run `npm run typecheck` while `next start` serves: `next typegen` wipes the build.
 - Test admin: `test-admin@example.test` / `TEST_ADMIN_PASSWORD` (test DB only). `scripts/create-admin.ts`.
 - Use cases live in `server/application` (pure, take ports as args); `server/container.ts` wires repos.
   Page copy comes from `getPageContent(container.pageContent, key)`.

@@ -18,9 +18,10 @@ export const NEWS_PAGE_SIZE = 12;
 export async function listNews(
   repo: NewsRepository,
   page: number,
+  pageSize: number = NEWS_PAGE_SIZE,
 ): Promise<Result<NewsPage>> {
   try {
-    return ok(await repo.list({ page, pageSize: NEWS_PAGE_SIZE }));
+    return ok(await repo.list({ page, pageSize }));
   } catch {
     return err(unexpected("Nepodařilo se načíst aktuality."));
   }
@@ -38,15 +39,24 @@ export async function latestNews(
 }
 
 export type NewsArticle = { article: NewsDetail; adjacent: AdjacentNews };
+export type NewsLookup =
+  { kind: "found"; value: NewsArticle } | { kind: "moved"; slug: string };
 
+/** Finds an article by slug; a renamed article reports its new slug (308 redirect). */
 export async function getNewsArticle(
   repo: NewsRepository,
   slug: string,
-): Promise<Result<NewsArticle>> {
+): Promise<Result<NewsLookup>> {
   try {
     const article = await repo.findBySlug(slug);
-    if (!article) return err(notFound("Aktualita nenalezena."));
-    return ok({ article, adjacent: await repo.adjacent(article.createdAt) });
+    if (article)
+      return ok({
+        kind: "found",
+        value: { article, adjacent: await repo.adjacent(article.createdAt) },
+      });
+    const current = await repo.findCurrentSlug(slug);
+    if (current) return ok({ kind: "moved", slug: current });
+    return err(notFound("Aktualita nenalezena."));
   } catch {
     return err(unexpected("Nepodařilo se načíst aktualitu."));
   }

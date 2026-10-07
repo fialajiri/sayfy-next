@@ -47,9 +47,9 @@ Legacy problems we fix: `window.prompt()` for links and YouTube; images uploaded
     is cleaned up on save.
   - **Alt text** (required before saving; the form blocks save with a clear message).
   - **Popisek** (optional caption → `<figure><img><figcaption>`).
-  - **Velikost:** drag-resize handles (Tiptap 3 Image `resize` option) **plus** presets
-    *malý 33 % / střední 50 % / velký 75 % / celá šířka*, stored as `width` (percent) so it scales
-    responsively.
+  - **Velikost:** presets *malý 33 % / střední 50 % / velký 75 % / celá šířka*, stored as
+    `data-width` (percent) so it scales responsively. (Built without drag handles: Tiptap's `resize`
+    stores fixed pixel widths, which overflow on phones.)
   - **Zarovnání:** left / center / right (the screenshot's centred course map is the common case).
     Left/right float with text wrap on ≥md; on mobile always full width.
   - **Odkaz z obrázku** (wrap the image in a link) and **Smazat**.

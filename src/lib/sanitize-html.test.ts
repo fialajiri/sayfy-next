@@ -59,3 +59,17 @@ describe("sanitizeRichText", () => {
     expect(out).toContain("data-attachment");
   });
 });
+
+describe("sanitizeRichText colours", () => {
+  it("keeps only brand-palette colours, in hex or rgb notation", () => {
+    expect(
+      sanitizeRichText('<span style="color: rgb(27, 122, 87)">a</span>'),
+    ).toContain("rgb(27, 122, 87)");
+    expect(sanitizeRichText('<span style="color: #C2410C">a</span>')).toContain(
+      "#C2410C",
+    );
+    expect(
+      sanitizeRichText('<span style="color: rgb(255, 0, 0)">a</span>'),
+    ).toBe("<span>a</span>");
+  });
+});

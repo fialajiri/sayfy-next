@@ -11,9 +11,10 @@ const IMAGE_HOSTS = [
 ];
 const YOUTUBE_EMBED =
   /^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]{6,20}(\?[\w=&-]*)?$/;
-// Text colours are limited to the brand palette (docs/08 §A2).
+// Text colours are limited to the brand palette (docs/08 §A2): ink, sayfy-700,
+// gold-700, danger. The editor normalises colours to rgb(), so accept both forms.
 const PALETTE_COLOR =
-  /^(var\(--color-(ink|sayfy-700|gold-700|danger)\)|#(141a17|1b7a57|7a5b0f|c2410c))$/i;
+  /^(#(141a17|1b7a57|7a5b0f|c2410c)|rgb\(\s*(20\s*,\s*26\s*,\s*23|27\s*,\s*122\s*,\s*87|122\s*,\s*91\s*,\s*15|194\s*,\s*65\s*,\s*12)\s*\))$/i;
 const TEXT_ALIGN = /^(left|center|right|justify)$/;
 
 export function sanitizeRichText(html: string): string {
@@ -66,7 +67,7 @@ export function sanitizeRichText(html: string): string {
       ],
       img: ["src", "alt", "width", "height"],
       figure: ["data-align", "data-width"],
-      div: ["data-callout"],
+      div: ["data-callout", "data-youtube-video"],
       th: ["colspan", "rowspan", "colwidth"],
       td: ["colspan", "rowspan", "colwidth"],
       col: ["span"],
